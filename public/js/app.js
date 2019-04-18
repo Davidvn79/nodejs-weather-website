@@ -86,8 +86,6 @@ weatherForm.addEventListener('submit', (e) =>{
 * 5.Test your work! Search for errors and for valid location
 */
 
-console.log('Client side javascript is loaded')
-
 const weatherForm = document.querySelector('form')
 const search = document.querySelector('input')
 const messageOne = document.querySelector('#message-1')
