@@ -762,7 +762,7 @@ app.listen(3000, () => {
 /************************
 * 8. Accessing API from Browser  (Weather App)
 * 4. ES6 Aside Default Function Parameters
-*/
+
 
 const path = require('path')
 const express = require('express')
@@ -870,4 +870,126 @@ app.get('*', (req , res) =>{
 
 app.listen(3000, () => {
     console.log('Server is up on port 3000.')
+})
+
+*/
+
+/************************
+* 9. Application Deployment (Weather App)
+* 8. Deploying Node.js to Heroku
+*/
+
+const path = require('path')
+const express = require('express')
+const hbs = require('hbs')
+const app = express()
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
+
+//define path for Express config
+const publicPath = path.join(__dirname, '../public')
+//setup static directory for server
+app.use(express.static(publicPath))
+
+const viewPath = path.join(__dirname, '../templates/views')
+const partialsPath = path.join(__dirname, '../templates/partials')
+
+//Setup port for heroku.com
+const port = process.env.PORT || 3000
+
+//register partials takes a path to the directory where your partials live.
+hbs.registerPartials(partialsPath)
+
+//setup handlerbars engine and view
+app.set('view engine','hbs')
+//CODE WORKING
+//app.set('views', './templates')
+app.set('views', viewPath)
+
+app.get('', (req , res) =>{
+    res.render('index', {
+        title: 'Weather',
+        name: 'David'
+    })
+})
+
+app.get('/about', (req , res) =>{
+    res.render('about', {
+        title: 'About',
+        name: 'David'
+    })
+})
+
+app.get('/help', (req , res) =>{
+    res.render('help', {
+        title: 'Help',
+        name: 'David'
+    })
+})
+
+app.get('/weather', (req , res) =>{
+    if(!req.query.address){
+        return res.send({
+            //error: 'You must provide an address in URL'
+            error: 'You must provide an address'
+        })
+    }
+
+    geocode(req.query.address, (error, {latitude, longitude, location} = {}) =>{
+        if(error){
+            //TEACHER'S CODE
+            return res.send({ error })    
+        }
+    
+        forecast(latitude, longitude, (error, dataForecast) => {
+            if(error){
+                //TEACHER'S CODE
+                return res.send({ error })
+            }
+            
+            //TEACHER'S CODE
+            res.send({
+                forecast: dataForecast, 
+                location
+            })
+        })
+    })
+})
+
+app.get('/products', (req , res) =>{
+    if(!req.query.search){
+        return res.send({
+            error: 'You must provide a search turn'
+        })
+    }
+
+    //console.log(req.query)
+    console.log(req.query.search)
+    res.send({
+        product:[]
+    })
+})
+
+app.get('/help/*', (req , res) =>{
+    res.render('404', {
+        title: '404',
+        name: 'David',
+        errorMsg: 'Help article not foundr'
+    })
+})
+
+app.get('*', (req , res) =>{
+    res.render('404', {
+        title: '404',
+        name: 'David',
+        errorMsg: 'Page 404 error'
+    })
+})
+
+// app.listen(3000, () => {
+//     console.log('Server is up on port 3000.')
+// })
+
+app.listen(port, () => {
+    console.log('Server is up on port' + port)
 })

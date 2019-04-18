@@ -84,7 +84,7 @@ weatherForm.addEventListener('submit', (e) =>{
 * 3.If error, render error
 * 4.If no error, render location and forecast
 * 5.Test your work! Search for errors and for valid location
-*/
+
 
 const weatherForm = document.querySelector('form')
 const search = document.querySelector('input')
@@ -114,3 +114,32 @@ weatherForm.addEventListener('submit', (e) =>{
 })
 })
 
+*/
+
+/************************
+* 9. Application Deployment (Weather App)
+* 8. Deploying Node.js to Heroku
+*/
+
+const weatherForm = document.querySelector('form')
+const search = document.querySelector('input')
+const messageOne = document.querySelector('#message-1')
+const messageTwo = document.querySelector('#message-2')
+
+weatherForm.addEventListener('submit', (e) =>{
+    const location = search.value
+    e.preventDefault()
+    messageOne.textContent = 'Loading...'
+    messageTwo.textContent = ''
+
+    fetch('/weather?address='+location).then((response) =>{
+    response.json().then((data) =>{
+        if(data.error){
+            messageOne.textContent = data.error
+        }else{
+            messageOne.textContent = data.location
+            messageTwo.textContent = data.forecast        
+        }
+    })
+})
+})
